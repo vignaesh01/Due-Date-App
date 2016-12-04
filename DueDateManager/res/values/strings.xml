@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Due Date Manager</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="addDueItem">Add Due Item</string>
+    <string name="viewItems">View Items</string>
+    <string name="title_activity_add_item">Add a Due Item</string>
+    <string name="title_activity_view_items">View Items</string>
+    <string name="title_activity_more_info">More Info</string>
+
+</resources>

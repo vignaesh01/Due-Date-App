@@ -1,0 +1,106 @@
+package com.example.duedatemanager;
+
+import android.app.Activity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+public class ViewItemsActivity extends Activity {
+	TableLayout table_layout;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_view_items);
+		  table_layout = (TableLayout) findViewById(R.id.tableLayout1);
+		  buildTable();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.view_items, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	public void buildTable(){
+		DueDateDbHelper mDbHelper =new DueDateDbHelper(getApplicationContext());
+		SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+		// Define a projection that specifies which columns from the database
+		// you will actually use after this query.
+		String[] projection = {
+			DueDateDBContract.DueItems._ID,
+			DueDateDBContract.DueItems.COLUMN_NAME_ITEM,
+			DueDateDBContract.DueItems.COLUMN_NAME_DATE
+		    };
+
+		// How you want the results sorted in the resulting Cursor
+		String sortOrder =
+			DueDateDBContract.DueItems.COLUMN_NAME_DATE + " DESC";
+
+		Cursor c = db.query(
+			DueDateDBContract.DueItems.TABLE_NAME,  // The table to query
+		    projection,                               // The columns to return
+		    null,                                // The columns for the WHERE clause
+		    null,                            // The values for the WHERE clause
+		    null,                                     // don't group the rows
+		    null,                                     // don't filter by row groups
+		    sortOrder                                 // The sort order
+		    );
+		
+		int rows = c.getCount();
+		  int cols = c.getColumnCount();
+
+		  c.moveToFirst();
+
+		  // outer for loop
+		  for (int i = 0; i < rows; i++) {
+
+		   TableRow row = new TableRow(this);
+		   row.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+		     LayoutParams.WRAP_CONTENT));
+
+		   // inner for loop
+		   for (int j = 0; j < cols; j++) {
+
+		    TextView tv = new TextView(this);
+		    tv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
+		      LayoutParams.WRAP_CONTENT));
+		   // tv.setBackgroundResource(R.drawable.cell_shape);
+		    tv.setGravity(Gravity.CENTER);
+		    tv.setTextSize(18);
+		    tv.setPadding(0, 5, 0, 5);
+
+		    tv.setText(c.getString(j));
+
+		    row.addView(tv);
+
+		   }
+
+		   c.moveToNext();
+
+		   table_layout.addView(row);
+
+		  }
+	
+	}
+}

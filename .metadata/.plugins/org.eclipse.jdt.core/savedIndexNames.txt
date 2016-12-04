@@ -1,0 +1,6 @@
+INDEX VERSION 1.126+D:\Android Workspaces\Due Date App\.metadata\.plugins\org.eclipse.jdt.core
+1284074322.index
+1942780855.index
+1650612822.index
+2525304874.index
+324074548.index

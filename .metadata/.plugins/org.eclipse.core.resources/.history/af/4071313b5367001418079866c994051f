@@ -1,0 +1,142 @@
+package com.example.duedatemanager;
+
+import java.util.Calendar;
+
+import android.support.v7.app.ActionBarActivity;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.DatePicker;
+import android.widget.EditText;
+
+public class AddItemActivity extends ActionBarActivity {
+	EditText itemName;
+	EditText itemDesc;
+	EditText itemDate;
+	private Calendar cal;
+	 private int day;
+	 private int month;
+	 private int year;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_add_item);
+		 itemName= (EditText)findViewById(R.id.editItemName);
+    	 itemDesc= (EditText)findViewById(R.id.editDesc);
+    	 itemDate= (EditText)findViewById(R.id.editDueDate);
+    	 cal = Calendar.getInstance();
+         day = cal.get(Calendar.DAY_OF_MONTH);
+         month = cal.get(Calendar.MONTH);
+         year = cal.get(Calendar.YEAR);
+
+
+         itemDate.setText(day+"/"+month+"/"+"/"+year);
+
+    	 itemDate.setOnClickListener(new OnClickListener() {
+
+    	        @Override
+    	        public void onClick(View v) {
+
+    	            DateDialog(); 
+
+    	        }
+    	    });
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.add_item, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	  public void addNewDueItem(View view){
+	    	/*EditText itemName= (EditText)findViewById(R.id.editItemName);
+	    	EditText itemDesc= (EditText)findViewById(R.id.editDesc);
+	    	EditText itemDate= (EditText)findViewById(R.id.editDueDate);*/
+	    	
+	    	DueDateDbHelper mDbHelper =new DueDateDbHelper(view.getContext());
+	    	// Gets the data repository in write mode
+	    	SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+	    	// Create a new map of values, where column names are the keys
+	    	ContentValues values = new ContentValues();
+	    	values.put(DueDateDBContract.DueItems.COLUMN_NAME_ITEM, itemName.getText().toString());
+	    	values.put(DueDateDBContract.DueItems.COLUMN_NAME_DESC, itemDesc.getText().toString());
+	    	values.put(DueDateDBContract.DueItems.COLUMN_NAME_DATE, itemDate.getText().toString());
+
+	    	// Insert the new row, returning the primary key value of the new row
+	    	long newRowId;
+	    	newRowId = db.insert(
+	    			DueDateDBContract.DueItems.TABLE_NAME,
+	    			null,
+	    	         values);
+	    	
+	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					this);
+	 
+				// set title
+				alertDialogBuilder.setTitle("Info");
+	 
+				// set dialog message
+				alertDialogBuilder
+					.setMessage("Due Item Added successfully : "+newRowId)
+					.setCancelable(false)
+					.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							// if this button is clicked, close
+							// current activity
+							dialog.cancel();
+						}
+					  })
+					.setNegativeButton("No",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							// if this button is clicked, just close
+							// the dialog box and do nothing
+							dialog.cancel();
+						}
+					});
+	 
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+					// show it
+					alertDialog.show();
+	    }
+	  public void DateDialog(){
+
+		  DatePickerDialog.OnDateSetListener listener=new DatePickerDialog.OnDateSetListener() {
+
+		    				@Override
+				public void onDateSet(DatePicker view, int year,
+						int monthOfYear, int dayOfMonth) {
+					// TODO Auto-generated method stub
+		    		itemDate.setText(dayOfMonth+"/"+monthOfYear+"/"+year);
+				}};
+
+		    DatePickerDialog dpDialog=new DatePickerDialog(this, listener, year, month, day);
+		    dpDialog.show();
+
+		}
+
+}
